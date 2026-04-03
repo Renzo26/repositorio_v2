@@ -1,0 +1,72 @@
+version: '3.9'
+
+services:
+  # ─── Banco de dados PostgreSQL (para desenvolvimento local) ─────────────────
+  db:
+    image: postgres:16-alpine
+    container_name: portfolio_db
+    environment:
+      POSTGRES_DB: portfolio_dev
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ─── API .NET Core ───────────────────────────────────────────────────────────
+  api:
+    build:
+      context: ./portfolio-api
+      dockerfile: Dockerfile
+    container_name: portfolio_api
+    ports:
+      - "5000:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=portfolio_dev;Username=postgres;Password=postgres
+      - Jwt__Key=dev-secret-key-troque-em-producao-32chars!!
+      - Jwt__Issuer=portfolio-api
+      - Jwt__Audience=portfolio-admin
+      - AdminPassword=admin123
+      - Supabase__Url=${SUPABASE_URL:-}
+      - Supabase__ServiceKey=${SUPABASE_SERVICE_KEY:-}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ─── Admin Angular ───────────────────────────────────────────────────────────
+  admin:
+    build:
+      context: ./portfolio-admin
+      dockerfile: Dockerfile
+    container_name: portfolio_admin
+    ports:
+      - "4200:80"
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  # ─── Portfolio React ─────────────────────────────────────────────────────────
+  portfolio:
+    build:
+      context: ./my-portfolio-style-guide
+      dockerfile: Dockerfile
+    container_name: portfolio_frontend
+    ports:
+      - "5173:80"
+    environment:
+      - VITE_API_URL=http://localhost:5000
+    depends_on:
+      - api
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

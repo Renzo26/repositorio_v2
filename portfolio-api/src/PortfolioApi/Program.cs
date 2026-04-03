@@ -1,0 +1,138 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using PortfolioApi.Data;
+using PortfolioApi.Endpoints;
+using PortfolioApi.Services;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// ─── Banco de dados ───────────────────────────────────────────────────────────
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// ─── Serviços da aplicação ────────────────────────────────────────────────────
+builder.Services.AddScoped<IProjectService, ProjectService>();
+builder.Services.AddScoped<IExperienceService, ExperienceService>();
+builder.Services.AddScoped<ICertificateService, CertificateService>();
+builder.Services.AddScoped<IEducationService, EducationService>();
+builder.Services.AddScoped<IProfileService, ProfileService>();
+builder.Services.AddScoped<IStorageService, SupabaseStorageService>();
+
+// ─── JWT ──────────────────────────────────────────────────────────────────────
+var jwtKey = builder.Configuration["Jwt:Key"]
+    ?? throw new InvalidOperationException("Jwt:Key não configurado. Verifique appsettings.json ou variáveis de ambiente.");
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
+            ValidateIssuer = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidateAudience = true,
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.Zero
+        };
+    });
+
+builder.Services.AddAuthorization();
+
+// ─── CORS ─────────────────────────────────────────────────────────────────────
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("PortfolioPolicy", policy =>
+    {
+        policy
+            .WithOrigins(
+                "http://localhost:5173",   // portfólio React (Vite)
+                "http://localhost:4200",   // admin Angular
+                "https://localhost:5173",
+                "https://localhost:4200"
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
+// ─── Swagger ──────────────────────────────────────────────────────────────────
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Portfolio API",
+        Version = "v1",
+        Description = "API para gerenciar conteúdo do portfólio pessoal"
+    });
+
+    // Suporte a JWT no Swagger UI
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        Description = "Informe o token JWT obtido em POST /api/auth/login"
+    });
+
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
+
+var app = builder.Build();
+
+// ─── Middleware ───────────────────────────────────────────────────────────────
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Portfolio API v1");
+        c.RoutePrefix = "swagger";
+    });
+}
+
+app.UseCors("PortfolioPolicy");
+app.UseAuthentication();
+app.UseAuthorization();
+
+// ─── Endpoints ────────────────────────────────────────────────────────────────
+app.MapAuthEndpoints();
+app.MapProjectEndpoints();
+app.MapExperienceEndpoints();
+app.MapCertificateEndpoints();
+app.MapEducationEndpoints();
+app.MapProfileEndpoints();
+app.MapUploadEndpoints();
+
+// Health check simples
+app.MapGet("/health", () => Results.Ok(new { status = "ok", timestamp = DateTime.UtcNow }))
+    .WithTags("Health")
+    .AllowAnonymous();
+
+// ─── Migração automática em desenvolvimento ───────────────────────────────────
+if (app.Environment.IsDevelopment())
+{
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await db.Database.MigrateAsync();
+}
+
+app.Run();
