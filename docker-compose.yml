@@ -37,6 +37,8 @@ services:
       - AdminPassword=admin123
       - Supabase__Url=${SUPABASE_URL:-}
       - Supabase__ServiceKey=${SUPABASE_SERVICE_KEY:-}
+    volumes:
+      - api_uploads:/app/wwwroot/uploads
     depends_on:
       db:
         condition: service_healthy
@@ -54,19 +56,6 @@ services:
       - api
     restart: unless-stopped
 
-  # ─── Portfolio React ─────────────────────────────────────────────────────────
-  portfolio:
-    build:
-      context: ./my-portfolio-style-guide
-      dockerfile: Dockerfile
-    container_name: portfolio_frontend
-    ports:
-      - "5173:80"
-    environment:
-      - VITE_API_URL=http://localhost:5000
-    depends_on:
-      - api
-    restart: unless-stopped
-
 volumes:
   postgres_data:
+  api_uploads:

@@ -7,8 +7,8 @@ public interface IStorageService
 
 public class SupabaseStorageService(IConfiguration config, ILogger<SupabaseStorageService> logger) : IStorageService
 {
-    private readonly string _supabaseUrl = config["Supabase:Url"] ?? throw new InvalidOperationException("Supabase:Url não configurado");
-    private readonly string _supabaseKey = config["Supabase:ServiceKey"] ?? throw new InvalidOperationException("Supabase:ServiceKey não configurado");
+    private readonly string _supabaseUrl = config["Supabase:Url"]!;
+    private readonly string _supabaseKey = config["Supabase:ServiceKey"]!;
 
     public async Task<string> UploadAsync(IFormFile file, string bucket = "portfolio")
     {

@@ -19,7 +19,16 @@ builder.Services.AddScoped<IExperienceService, ExperienceService>();
 builder.Services.AddScoped<ICertificateService, CertificateService>();
 builder.Services.AddScoped<IEducationService, EducationService>();
 builder.Services.AddScoped<IProfileService, ProfileService>();
-builder.Services.AddScoped<IStorageService, SupabaseStorageService>();
+builder.Services.AddHttpContextAccessor();
+
+var supabaseUrl = builder.Configuration["Supabase:Url"];
+var supabaseKey = builder.Configuration["Supabase:ServiceKey"];
+var useSupabase = !string.IsNullOrWhiteSpace(supabaseUrl) && !string.IsNullOrWhiteSpace(supabaseKey);
+
+if (useSupabase)
+    builder.Services.AddScoped<IStorageService, SupabaseStorageService>();
+else
+    builder.Services.AddScoped<IStorageService, LocalStorageService>();
 
 // ─── JWT ──────────────────────────────────────────────────────────────────────
 var jwtKey = builder.Configuration["Jwt:Key"]
@@ -110,6 +119,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("PortfolioPolicy");
+app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
 
