@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 const navLinks = [
   { label: "Sobre Mim", href: "#hero" },
   { label: "Projetos", href: "#projects" },
+  { label: "Formação", href: "#education" },
   { label: "Contato", href: "#contact" },
 ];
 
@@ -55,15 +56,6 @@ const Navbar = () => {
               <span className="absolute -bottom-1 left-0 h-px w-0 bg-primary transition-all duration-300 group-hover:w-full" />
             </motion.a>
           ))}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.4, duration: 0.5 }}
-          >
-            <Button size="sm" className="rounded-full px-6 font-semibold glow-green hover:glow-green-strong transition-shadow duration-300">
-              Resumo
-            </Button>
-          </motion.div>
         </div>
 
         {/* Mobile toggle */}
@@ -100,9 +92,6 @@ const Navbar = () => {
                   {link.label}
                 </motion.a>
               ))}
-              <Button size="sm" className="rounded-full font-semibold">
-                Resumo
-              </Button>
             </div>
           </motion.div>
         )}

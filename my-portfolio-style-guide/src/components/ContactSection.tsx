@@ -1,23 +1,72 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Github, Linkedin, Mail, Globe, Send } from "lucide-react";
+import { Github, Linkedin, Mail, Globe, Send, Check } from "lucide-react";
 import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchProfile } from "@/lib/api";
+
+function normalizeUrl(url: string): string {
+  if (!url) return url;
+  if (url.startsWith("http://") || url.startsWith("https://")) return url;
+  return `https://${url}`;
+}
 
 const ContactSection = () => {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
   const { data: profile } = useQuery({ queryKey: ["profile"], queryFn: fetchProfile });
+  const [emailCopiado, setEmailCopiado] = useState(false);
+
+  function copiarEmail() {
+    if (!profile?.email) return;
+    navigator.clipboard.writeText(profile.email).then(() => {
+      setEmailCopiado(true);
+      setTimeout(() => setEmailCopiado(false), 2000);
+    });
+  }
+
+  function abrirWhatsApp() {
+    window.open("https://wa.me/11987278746", "_blank");
+  }
 
   const socials = [
-    profile?.githubUrl && { icon: Github, label: "GitHub", href: profile.githubUrl, color: "group-hover:text-foreground" },
-    profile?.linkedinUrl && { icon: Linkedin, label: "LinkedIn", href: profile.linkedinUrl, color: "group-hover:text-blue-400" },
-    profile?.email && { icon: Mail, label: "Email", href: `mailto:${profile.email}`, color: "group-hover:text-primary" },
-    profile?.websiteUrl && { icon: Globe, label: "Website", href: profile.websiteUrl, color: "group-hover:text-emerald-400" },
-  ].filter(Boolean) as { icon: React.ElementType; label: string; href: string; color: string }[];
+    profile?.githubUrl && {
+      icon: Github,
+      label: "GitHub",
+      href: normalizeUrl(profile.githubUrl),
+      color: "group-hover:text-foreground",
+      onClick: undefined,
+    },
+    profile?.linkedinUrl && {
+      icon: Linkedin,
+      label: "LinkedIn",
+      href: normalizeUrl(profile.linkedinUrl),
+      color: "group-hover:text-blue-400",
+      onClick: undefined,
+    },
+    profile?.email && {
+      icon: emailCopiado ? Check : Mail,
+      label: emailCopiado ? "Copiado!" : "Email",
+      href: undefined,
+      color: emailCopiado ? "text-primary" : "group-hover:text-primary",
+      onClick: copiarEmail,
+    },
+    profile?.websiteUrl && {
+      icon: Globe,
+      label: "Website",
+      href: normalizeUrl(profile.websiteUrl),
+      color: "group-hover:text-emerald-400",
+      onClick: undefined,
+    },
+  ].filter(Boolean) as {
+    icon: React.ElementType;
+    label: string;
+    href?: string;
+    color: string;
+    onClick?: () => void;
+  }[];
 
   return (
     <section id="contact" className="py-20 relative">
@@ -70,9 +119,14 @@ const ContactSection = () => {
                 rows={5}
                 className="rounded-xl border-border bg-secondary placeholder:text-muted-foreground focus:border-primary/40 transition-all duration-300 resize-none"
               />
-              <Button className="w-full rounded-full font-semibold glow-green hover:glow-green-strong hover:scale-[1.02] transition-all duration-300" size="lg">
+              <Button
+                type="button"
+                onClick={abrirWhatsApp}
+                className="w-full rounded-full font-semibold glow-green hover:glow-green-strong hover:scale-[1.02] transition-all duration-300"
+                size="lg"
+              >
                 <Send className="mr-2 h-4 w-4" />
-                Enviar Mensagem
+                Enviar Mensagem via WhatsApp
               </Button>
             </div>
           </motion.form>
@@ -93,24 +147,42 @@ const ContactSection = () => {
 
             {socials.length > 0 ? (
               <div className="mt-8 grid grid-cols-2 gap-4">
-                {socials.map((social, i) => (
-                  <motion.a
-                    key={social.label}
-                    href={social.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={inView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ duration: 0.5, delay: 0.4 + i * 0.1 }}
-                    whileHover={{ y: -3, scale: 1.02 }}
-                    className="group flex items-center gap-3 rounded-xl border border-border bg-card p-4 transition-all duration-300 hover:border-primary/40 hover:glow-green"
-                  >
-                    <social.icon className={`h-5 w-5 text-muted-foreground transition-colors duration-300 ${social.color}`} />
-                    <span className="text-sm font-medium text-foreground">
-                      {social.label}
-                    </span>
-                  </motion.a>
-                ))}
+                {socials.map((social, i) => {
+                  const content = (
+                    <motion.div
+                      key={social.label}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={inView ? { opacity: 1, y: 0 } : {}}
+                      transition={{ duration: 0.5, delay: 0.4 + i * 0.1 }}
+                      whileHover={{ y: -3, scale: 1.02 }}
+                      className="group flex items-center gap-3 rounded-xl border border-border bg-card p-4 transition-all duration-300 hover:border-primary/40 hover:glow-green cursor-pointer"
+                    >
+                      <social.icon className={`h-5 w-5 text-muted-foreground transition-colors duration-300 ${social.color}`} />
+                      <span className="text-sm font-medium text-foreground">
+                        {social.label}
+                      </span>
+                    </motion.div>
+                  );
+
+                  if (social.onClick) {
+                    return (
+                      <div key={social.label} onClick={social.onClick}>
+                        {content}
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <a
+                      key={social.label}
+                      href={social.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {content}
+                    </a>
+                  );
+                })}
               </div>
             ) : (
               <p className="mt-8 text-sm text-muted-foreground">Nenhuma rede social cadastrada.</p>

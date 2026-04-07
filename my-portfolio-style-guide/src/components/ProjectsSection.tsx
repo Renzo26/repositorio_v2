@@ -200,7 +200,12 @@ const ProjectsSection = () => {
                       </a>
                     </Button>
                   )}
-                  <Button size="sm" variant="ghost" className="rounded-full text-xs ml-auto text-muted-foreground">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="rounded-full text-xs ml-auto text-muted-foreground hover:text-primary transition-colors"
+                    onClick={() => setProjetoSelecionado(project)}
+                  >
                     Ver detalhes →
                   </Button>
                 </div>

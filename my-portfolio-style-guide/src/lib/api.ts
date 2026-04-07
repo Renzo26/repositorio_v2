@@ -37,8 +37,42 @@ export async function fetchProfile(): Promise<Profile> {
   return res.json();
 }
 
+export interface Education {
+  id: string;
+  institution: string;
+  degree: string;
+  field: string;
+  startDate: string;
+  endDate?: string;
+  description?: string;
+  imageUrl?: string;
+}
+
+export interface Certificate {
+  id: string;
+  title: string;
+  issuer: string;
+  issuedDate: string;
+  expiryDate?: string;
+  credentialUrl?: string;
+  imageUrl?: string;
+  description?: string;
+}
+
 export async function fetchProjects(): Promise<Project[]> {
   const res = await fetch(`${API_URL}/api/projects`);
   if (!res.ok) throw new Error("Erro ao buscar projetos");
+  return res.json();
+}
+
+export async function fetchEducation(): Promise<Education[]> {
+  const res = await fetch(`${API_URL}/api/education`);
+  if (!res.ok) throw new Error("Erro ao buscar formações");
+  return res.json();
+}
+
+export async function fetchCertificates(): Promise<Certificate[]> {
+  const res = await fetch(`${API_URL}/api/certificates`);
+  if (!res.ok) throw new Error("Erro ao buscar certificados");
   return res.json();
 }
