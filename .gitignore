@@ -13,6 +13,10 @@ dist/
 *.env
 !.env.example
 
+# Uploads locais
+**/uploads/*
+!**/uploads/.gitkeep
+
 # Geral
 .DS_Store
 Thumbs.db

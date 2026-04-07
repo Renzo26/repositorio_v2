@@ -145,4 +145,12 @@ public class Profile
 
     [MaxLength(500)]
     public string? WebsiteUrl { get; set; }
+
+    [MaxLength(500)]
+    public string HeroGreeting { get; set; } = "Hey, eu sou";
+
+    public int HoursOfCode { get; set; } = 0;
+    public int ProjectsDelivered { get; set; } = 0;
+    public int SatisfactionRate { get; set; } = 100;
+    public decimal AverageRating { get; set; } = 5.0m;
 }

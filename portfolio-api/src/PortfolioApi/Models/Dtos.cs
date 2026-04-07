@@ -154,7 +154,12 @@ public record ProfileDto(
     string? AvatarUrl,
     string? LinkedinUrl,
     string? GithubUrl,
-    string? WebsiteUrl
+    string? WebsiteUrl,
+    string HeroGreeting,
+    int HoursOfCode,
+    int ProjectsDelivered,
+    int SatisfactionRate,
+    decimal AverageRating
 );
 
 public record UpdateProfileDto(
@@ -167,7 +172,12 @@ public record UpdateProfileDto(
     string? AvatarUrl,
     string? LinkedinUrl,
     string? GithubUrl,
-    string? WebsiteUrl
+    string? WebsiteUrl,
+    [MaxLength(500)] string HeroGreeting,
+    int HoursOfCode,
+    int ProjectsDelivered,
+    int SatisfactionRate,
+    decimal AverageRating
 );
 
 // --- Auth ---

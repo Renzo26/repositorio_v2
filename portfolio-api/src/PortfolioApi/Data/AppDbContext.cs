@@ -93,6 +93,11 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.Property(x => x.LinkedinUrl).HasColumnName("linkedin_url");
             e.Property(x => x.GithubUrl).HasColumnName("github_url");
             e.Property(x => x.WebsiteUrl).HasColumnName("website_url");
+            e.Property(x => x.HeroGreeting).HasColumnName("hero_greeting").HasDefaultValue("Hey, eu sou");
+            e.Property(x => x.HoursOfCode).HasColumnName("hours_of_code").HasDefaultValue(0);
+            e.Property(x => x.ProjectsDelivered).HasColumnName("projects_delivered").HasDefaultValue(0);
+            e.Property(x => x.SatisfactionRate).HasColumnName("satisfaction_rate").HasDefaultValue(100);
+            e.Property(x => x.AverageRating).HasColumnName("average_rating").HasDefaultValue(5.0m);
         });
     }
 }

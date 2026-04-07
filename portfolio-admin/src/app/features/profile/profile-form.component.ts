@@ -64,6 +64,20 @@ import { ImageUploadComponent } from '../../shared/components/image-upload/image
             </mat-form-field>
           </div>
 
+          <!-- Saudacao do Hero -->
+          <div class="bg-white rounded-xl border border-gray-200 p-4 space-y-3">
+            <h3 class="text-sm font-medium text-gray-700">Titulo do Portfolio</h3>
+            <p class="text-xs text-gray-400">Texto que aparece antes do seu nome na pagina inicial. Ex: "Hey, eu sou"</p>
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Saudacao</mat-label>
+              <mat-icon matPrefix class="mr-2 text-gray-400">waving_hand</mat-icon>
+              <input matInput formControlName="heroGreeting" placeholder="Hey, eu sou" />
+            </mat-form-field>
+            <div class="bg-gray-50 rounded-lg px-4 py-2 text-sm text-gray-600">
+              Preview: <span class="font-semibold">{{ form.get('heroGreeting')?.value || 'Hey, eu sou' }} {{ form.get('name')?.value || 'Seu Nome' }} 👋</span>
+            </div>
+          </div>
+
           <mat-form-field appearance="outline">
             <mat-label>Bio</mat-label>
             <textarea
@@ -73,6 +87,41 @@ import { ImageUploadComponent } from '../../shared/components/image-upload/image
               placeholder="Uma breve descricao sobre voce..."
             ></textarea>
           </mat-form-field>
+
+          <!-- Metricas -->
+          <div class="bg-white rounded-xl border border-gray-200 p-4 space-y-4">
+            <h3 class="text-sm font-medium text-gray-700">Metricas do Portfolio</h3>
+            <p class="text-xs text-gray-400">Numeros exibidos nos cards de estatisticas</p>
+            <div class="grid gap-4 sm:grid-cols-2">
+              <mat-form-field appearance="outline">
+                <mat-label>Horas de Codigo</mat-label>
+                <mat-icon matPrefix class="mr-2 text-gray-400">hourglass_empty</mat-icon>
+                <input matInput type="number" formControlName="hoursOfCode" min="0" />
+                <mat-hint>Ex: 3500</mat-hint>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Projetos Entregues</mat-label>
+                <mat-icon matPrefix class="mr-2 text-gray-400">rocket_launch</mat-icon>
+                <input matInput type="number" formControlName="projectsDelivered" min="0" />
+                <mat-hint>Ex: 45</mat-hint>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Taxa de Satisfacao (%)</mat-label>
+                <mat-icon matPrefix class="mr-2 text-gray-400">sentiment_satisfied</mat-icon>
+                <input matInput type="number" formControlName="satisfactionRate" min="0" max="100" />
+                <mat-hint>0 a 100</mat-hint>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Avaliacao Media (0-5)</mat-label>
+                <mat-icon matPrefix class="mr-2 text-gray-400">star</mat-icon>
+                <input matInput type="number" formControlName="averageRating" min="0" max="5" step="0.1" />
+                <mat-hint>Ex: 4.9</mat-hint>
+              </mat-form-field>
+            </div>
+          </div>
 
           <!-- Contato -->
           <div class="bg-white rounded-xl border border-gray-200 p-4 space-y-4">
@@ -145,6 +194,11 @@ export class ProfileFormComponent implements OnInit {
     name: ['', [Validators.required]],
     title: [''],
     bio: [''],
+    heroGreeting: ['Hey, eu sou'],
+    hoursOfCode: [0],
+    projectsDelivered: [0],
+    satisfactionRate: [100],
+    averageRating: [5.0],
     email: [''],
     phone: [''],
     location: [''],
@@ -161,6 +215,11 @@ export class ProfileFormComponent implements OnInit {
           name: profile.name,
           title: profile.title,
           bio: profile.bio,
+          heroGreeting: profile.heroGreeting ?? 'Hey, eu sou',
+          hoursOfCode: profile.hoursOfCode ?? 0,
+          projectsDelivered: profile.projectsDelivered ?? 0,
+          satisfactionRate: profile.satisfactionRate ?? 100,
+          averageRating: profile.averageRating ?? 5.0,
           email: profile.email,
           phone: profile.phone,
           location: profile.location,
@@ -172,7 +231,6 @@ export class ProfileFormComponent implements OnInit {
         this.carregando.set(false);
       },
       error: (err) => {
-        // 404 significa que o perfil ainda nao foi criado — ok
         if (err.status !== 404) {
           this.snackBar.open('Erro ao carregar perfil', 'Fechar', { duration: 3000 });
         }
@@ -193,6 +251,11 @@ export class ProfileFormComponent implements OnInit {
       name: v.name!,
       title: v.title ?? '',
       bio: v.bio ?? '',
+      heroGreeting: v.heroGreeting ?? 'Hey, eu sou',
+      hoursOfCode: v.hoursOfCode ?? 0,
+      projectsDelivered: v.projectsDelivered ?? 0,
+      satisfactionRate: v.satisfactionRate ?? 100,
+      averageRating: v.averageRating ?? 5.0,
       email: v.email ?? null,
       phone: v.phone ?? null,
       location: v.location ?? null,

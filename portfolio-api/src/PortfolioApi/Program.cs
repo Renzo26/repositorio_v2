@@ -60,8 +60,10 @@ builder.Services.AddCors(options =>
         policy
             .WithOrigins(
                 "http://localhost:5173",   // portfólio React (Vite)
+                "http://localhost:8080",   // portfólio React (Vite alternativo)
                 "http://localhost:4200",   // admin Angular
                 "https://localhost:5173",
+                "https://localhost:8080",
                 "https://localhost:4200"
             )
             .AllowAnyHeader()
@@ -119,7 +121,15 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("PortfolioPolicy");
-app.UseStaticFiles();
+
+var uploadsPath = Path.Combine(app.Environment.ContentRootPath, "uploads");
+Directory.CreateDirectory(uploadsPath);
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(uploadsPath),
+    RequestPath = "/uploads"
+});
+
 app.UseAuthentication();
 app.UseAuthorization();
 

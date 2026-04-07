@@ -61,6 +61,11 @@ export interface Profile {
   linkedinUrl: string | null;
   githubUrl: string | null;
   websiteUrl: string | null;
+  heroGreeting: string;
+  hoursOfCode: number;
+  projectsDelivered: number;
+  satisfactionRate: number;
+  averageRating: number;
 }
 
 export interface UploadResponse {
@@ -130,4 +135,9 @@ export interface UpdateProfileDto {
   linkedinUrl: string | null;
   githubUrl: string | null;
   websiteUrl: string | null;
+  heroGreeting: string;
+  hoursOfCode: number;
+  projectsDelivered: number;
+  satisfactionRate: number;
+  averageRating: number;
 }

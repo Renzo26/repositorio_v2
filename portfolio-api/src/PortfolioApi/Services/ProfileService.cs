@@ -38,6 +38,11 @@ public class ProfileService(AppDbContext db) : IProfileService
         profile.LinkedinUrl = dto.LinkedinUrl;
         profile.GithubUrl = dto.GithubUrl;
         profile.WebsiteUrl = dto.WebsiteUrl;
+        profile.HeroGreeting = dto.HeroGreeting;
+        profile.HoursOfCode = dto.HoursOfCode;
+        profile.ProjectsDelivered = dto.ProjectsDelivered;
+        profile.SatisfactionRate = dto.SatisfactionRate;
+        profile.AverageRating = dto.AverageRating;
 
         await db.SaveChangesAsync();
         return MapToDto(profile);
@@ -45,6 +50,7 @@ public class ProfileService(AppDbContext db) : IProfileService
 
     private static ProfileDto MapToDto(Profile p) => new(
         p.Id, p.Name, p.Title, p.Bio, p.Email, p.Phone,
-        p.Location, p.AvatarUrl, p.LinkedinUrl, p.GithubUrl, p.WebsiteUrl
+        p.Location, p.AvatarUrl, p.LinkedinUrl, p.GithubUrl, p.WebsiteUrl,
+        p.HeroGreeting, p.HoursOfCode, p.ProjectsDelivered, p.SatisfactionRate, p.AverageRating
     );
 }
