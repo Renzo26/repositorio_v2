@@ -1,0 +1,13 @@
+Alterações e correções de erros : 
+
+1- Quando eu clico no logo do linkedin está me redirecionando para uma tela quebrada
+
+2- O logo do email não me leva para nenhuma lugar, coloque que quando clicar em email vai copiar o email (Especifique isso no front)
+
+3- Na parte de contato, quando Clicar em enviar mensagem leva a pessoa a me enviar mensagem no whatsapp pessoal com o wa.me//11987278746
+
+4- No admin eu consigo colocar formações e cerficados, mas no front isso não está aparecendo em lugar nenhum ( Adicione essas 2 sessões usando rigorosamento o mesmo padrão que o front está fazendo)
+
+5- o botão resumo no topo da página não leva a lugar nenhum, tire ele 
+
+6- Botão "Ver detalhes " em cada projeto não abre nada, ele tem que abrir igual quando clica em cima dele 

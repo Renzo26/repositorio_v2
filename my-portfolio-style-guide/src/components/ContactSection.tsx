@@ -1,6 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Github, Linkedin, Mail, Globe, Send, Check } from "lucide-react";
 import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
@@ -89,47 +87,31 @@ const ContactSection = () => {
         </motion.div>
 
         <div className="grid gap-12 md:grid-cols-2">
-          {/* Form */}
-          <motion.form
+          {/* WhatsApp CTA */}
+          <motion.div
             initial={{ opacity: 0, x: -40 }}
             animate={inView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.7, delay: 0.2 }}
-            className="space-y-5 rounded-2xl border border-border bg-card p-6 sm:p-8 relative overflow-hidden"
-            onSubmit={(e) => e.preventDefault()}
+            className="flex flex-col items-center justify-center rounded-2xl border border-border bg-card p-8 sm:p-10 relative overflow-hidden gap-6 text-center"
           >
             <div className="absolute top-0 right-0 w-40 h-40 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-            <div className="relative space-y-5">
-              <div className="grid gap-5 sm:grid-cols-2">
-                <Input
-                  placeholder="Seu nome"
-                  className="rounded-xl border-border bg-secondary placeholder:text-muted-foreground focus:border-primary/40 focus:glow-green transition-all duration-300"
-                />
-                <Input
-                  type="email"
-                  placeholder="Seu email"
-                  className="rounded-xl border-border bg-secondary placeholder:text-muted-foreground focus:border-primary/40 transition-all duration-300"
-                />
-              </div>
-              <Input
-                placeholder="Assunto"
-                className="rounded-xl border-border bg-secondary placeholder:text-muted-foreground focus:border-primary/40 transition-all duration-300"
-              />
-              <Textarea
-                placeholder="Sua mensagem..."
-                rows={5}
-                className="rounded-xl border-border bg-secondary placeholder:text-muted-foreground focus:border-primary/40 transition-all duration-300 resize-none"
-              />
+            <div className="relative flex flex-col items-center gap-4">
+              <span className="text-5xl">💬</span>
+              <h3 className="font-heading text-xl font-semibold text-foreground">Bora conversar?</h3>
+              <p className="text-sm text-muted-foreground max-w-xs">
+                Me chama no WhatsApp! Respondo rápido e adoro um bom papo sobre projetos.
+              </p>
               <Button
                 type="button"
                 onClick={abrirWhatsApp}
-                className="w-full rounded-full font-semibold glow-green hover:glow-green-strong hover:scale-[1.02] transition-all duration-300"
+                className="rounded-full font-semibold glow-green hover:glow-green-strong hover:scale-[1.02] transition-all duration-300 px-8"
                 size="lg"
               >
                 <Send className="mr-2 h-4 w-4" />
                 Enviar Mensagem via WhatsApp
               </Button>
             </div>
-          </motion.form>
+          </motion.div>
 
           {/* Socials */}
           <motion.div
