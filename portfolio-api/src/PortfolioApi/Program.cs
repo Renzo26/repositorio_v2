@@ -158,11 +158,17 @@ app.MapGet("/health", () => Results.Ok(new { status = "ok", timestamp = DateTime
     .WithTags("Health")
     .AllowAnonymous();
 
-// ─── Migração automática ──────────────────────────────────────────────────────
-using (var scope = app.Services.CreateScope())
+// ─── Migração automática (tolerante a falha para nao derrubar o boot) ────────
+try
 {
+    using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     await db.Database.MigrateAsync();
+    app.Logger.LogInformation("Migracao aplicada com sucesso.");
+}
+catch (Exception ex)
+{
+    app.Logger.LogError(ex, "Falha ao aplicar migracoes no startup. App vai continuar subindo.");
 }
 
 app.Run();
