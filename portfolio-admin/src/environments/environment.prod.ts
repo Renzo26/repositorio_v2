@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://sua-api.exemplo.com'
+  apiUrl: 'https://portfloio-api.e4xqua.easypanel.host'
 };
