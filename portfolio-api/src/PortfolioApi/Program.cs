@@ -103,6 +103,24 @@ builder.Services.AddSwaggerGen(options =>
 var app = builder.Build();
 
 // ─── Middleware ───────────────────────────────────────────────────────────────
+app.UseExceptionHandler(errApp =>
+{
+    errApp.Run(async context =>
+    {
+        var feature = context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerFeature>();
+        var ex = feature?.Error;
+        context.Response.StatusCode = 500;
+        context.Response.ContentType = "application/json";
+        await context.Response.WriteAsJsonAsync(new
+        {
+            error = ex?.GetType().FullName,
+            message = ex?.Message,
+            inner = ex?.InnerException?.Message,
+            stack = ex?.StackTrace
+        });
+    });
+});
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -140,10 +158,9 @@ app.MapGet("/health", () => Results.Ok(new { status = "ok", timestamp = DateTime
     .WithTags("Health")
     .AllowAnonymous();
 
-// ─── Migração automática em desenvolvimento ───────────────────────────────────
-if (app.Environment.IsDevelopment())
+// ─── Migração automática ──────────────────────────────────────────────────────
+using (var scope = app.Services.CreateScope())
 {
-    using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     await db.Database.MigrateAsync();
 }
