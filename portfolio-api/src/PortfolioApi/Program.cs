@@ -53,26 +53,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization();
 
 // ─── CORS ─────────────────────────────────────────────────────────────────────
-var allowedOrigins = builder.Configuration["AllowedOrigins"]?.Split(",") ?? [];
-var defaultOrigins = new[]
-{
-    "http://localhost:5173",
-    "http://localhost:8080",
-    "http://localhost:4200",
-    "https://localhost:5173",
-    "https://localhost:8080",
-    "https://localhost:4200"
-};
-var origins = allowedOrigins.Length > 0
-    ? allowedOrigins.Concat(defaultOrigins).ToArray()
-    : defaultOrigins;
-
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("PortfolioPolicy", policy =>
     {
         policy
-            .WithOrigins(origins)
+            .AllowAnyOrigin()
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
