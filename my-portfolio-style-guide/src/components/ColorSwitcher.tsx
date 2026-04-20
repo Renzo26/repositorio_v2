@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Palette } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -22,7 +22,11 @@ const applyTheme = (theme: typeof colorThemes[0]) => {
 
 const ColorSwitcher = () => {
   const [open, setOpen] = useState(false);
-  const [active, setActive] = useState(0);
+  const [active, setActive] = useState(4);
+
+  useEffect(() => {
+    applyTheme(colorThemes[4]);
+  }, []);
 
   const handleSelect = (index: number) => {
     setActive(index);
